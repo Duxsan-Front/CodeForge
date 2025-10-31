@@ -3,34 +3,36 @@
     <div class="course-layout">
       <!-- Боковая панель с заданиями -->
       <aside class="sidebar">
-        <div class="sidebar-header">
-          <h2>Python Курс</h2>
-          <div class="progress">
-            <div class="progress-bar">
-              <div class="progress-fill" :style="{ width: progress + '%' }"></div>
+        <div class="sidebar-content">
+          <div class="sidebar-header">
+            <h2>Python Курс</h2>
+            <div class="progress">
+              <div class="progress-bar">
+                <div class="progress-fill" :style="{ width: progress + '%' }"></div>
+              </div>
+              <span>{{ progress }}% завершено</span>
             </div>
-            <span>{{ progress }}% завершено</span>
           </div>
-        </div>
-        
-        <div class="lessons-list">
-          <div 
-            v-for="lesson in lessons" 
-            :key="lesson.id"
-            class="lesson-item"
-            :class="{
-              'lesson-item--active': currentLesson.id === lesson.id,
-              'lesson-item--completed': lesson.completed
-            }"
-            @click="selectLesson(lesson)"
-          >
-            <div class="lesson-icon">
-              <span v-if="lesson.completed">✓</span>
-              <span v-else>{{ lesson.id }}</span>
-            </div>
-            <div class="lesson-info">
-              <h3>{{ lesson.title }}</h3>
-              <p>{{ lesson.description }}</p>
+          
+          <div class="lessons-list">
+            <div
+              v-for="lesson in lessons" 
+              :key="lesson.id"
+              class="lesson-item"
+              :class="{
+                'lesson-item--active': currentLesson.id === lesson.id,
+                'lesson-item--completed': lesson.completed
+              }"
+              @click="selectLesson(lesson)"
+            >
+              <div class="lesson-icon">
+                <span v-if="lesson.completed">✓</span>
+                <span v-else>{{ lesson.id }}</span>
+              </div>
+              <div class="lesson-info">
+                <h3>{{ lesson.title }}</h3>
+                <p>{{ lesson.description }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -51,7 +53,7 @@
           </div>
         </section>
 
-        <!-- Редактор кода с Monaco (используем wrapper) -->
+        <!-- Простой редактор кода -->
         <section class="code-section">
           <div class="code-header">
             <h3>Редактор кода</h3>
@@ -60,13 +62,17 @@
             </div>
           </div>
           <div class="code-editor-container">
-            <monaco-editor
-              v-model="userCode"
-              language="python"
-              theme="vs-dark"
-              :options="editorOptions"
-              @editorDidMount="onEditorMount"
-            />
+            <div class="code-editor-wrapper">
+              <textarea 
+                v-model="userCode"
+                class="simple-editor"
+                placeholder="Введите ваш код здесь..."
+                spellcheck="false"
+              ></textarea>
+              <div class="line-numbers">
+                <span v-for="n in lineCount" :key="n">{{ n }}</span>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -165,11 +171,8 @@
 </template>
 
 <script>
-import MonacoEditor from 'monaco-editor-vue3' // Импорт wrapper
-
 export default {
   name: 'Python',
-  components: { MonacoEditor },
   data() {
     return {
       userCode: '',
@@ -219,25 +222,103 @@ export default {
             { input: '7', expected: '5040', actual: null, status: null, error: null }
           ],
           starterCode: '# Вычислите факториал числа\nn = int(input())\n# Ваш код здесь'
+        },
+        {
+          id: 4,
+          title: 'Проверка на четность',
+          description: 'Напишите программу, которая проверяет, является ли число четным.',
+          difficulty: 'easy',
+          completed: false,
+          tests: [
+            { input: '4', expected: 'Четное', actual: null, status: null, error: null },
+            { input: '7', expected: 'Нечетное', actual: null, status: null, error: null },
+            { input: '0', expected: 'Четное', actual: null, status: null, error: null }
+          ],
+          starterCode: '# Проверка на четность\nn = int(input())\n# Ваш код здесь'
+        },
+        {
+          id: 5,
+          title: 'Поиск максимума',
+          description: 'Напишите программу, которая находит максимальное из трех чисел.',
+          difficulty: 'medium',
+          completed: false,
+          tests: [
+            { input: '5 3 8', expected: '8', actual: null, status: null, error: null },
+            { input: '10 20 15', expected: '20', actual: null, status: null, error: null },
+            { input: '-5 -3 -1', expected: '-1', actual: null, status: null, error: null }
+          ],
+          starterCode: '# Найдите максимальное из трех чисел\nnum1, num2, num3 = map(int, input().split())\n# Ваш код здесь'
+        },
+        {
+          id: 6,
+          title: 'Палиндром',
+          description: 'Напишите программу, которая проверяет, является ли строка палиндромом.',
+          difficulty: 'medium',
+          completed: false,
+          tests: [
+            { input: 'radar', expected: 'Палиндром', actual: null, status: null, error: null },
+            { input: 'python', expected: 'Не палиндром', actual: null, status: null, error: null },
+            { input: 'a', expected: 'Палиндром', actual: null, status: null, error: null }
+          ],
+          starterCode: '# Проверка на палиндром\ns = input()\n# Ваш код здесь'
+        },
+        {
+          id: 7,
+          title: 'Числа Фибоначчи',
+          description: 'Напишите программу, которая выводит n-ное число Фибоначчи.',
+          difficulty: 'medium',
+          completed: false,
+          tests: [
+            { input: '5', expected: '5', actual: null, status: null, error: null },
+            { input: '7', expected: '13', actual: null, status: null, error: null },
+            { input: '10', expected: '55', actual: null, status: null, error: null }
+          ],
+          starterCode: '# Числа Фибоначчи\nn = int(input())\n# Ваш код здесь'
+        },
+        {
+          id: 8,
+          title: 'Простые числа',
+          description: 'Напишите программу, которая проверяет, является ли число простым.',
+          difficulty: 'medium',
+          completed: false,
+          tests: [
+            { input: '7', expected: 'Простое', actual: null, status: null, error: null },
+            { input: '10', expected: 'Составное', actual: null, status: null, error: null },
+            { input: '17', expected: 'Простое', actual: null, status: null, error: null }
+          ],
+          starterCode: '# Проверка на простое число\nn = int(input())\n# Ваш код здесь'
+        },
+        {
+          id: 9,
+          title: 'Обратная строка',
+          description: 'Напишите программу, которая переворачивает строку.',
+          difficulty: 'easy',
+          completed: false,
+          tests: [
+            { input: 'hello', expected: 'olleh', actual: null, status: null, error: null },
+            { input: 'python', expected: 'nohtyp', actual: null, status: null, error: null },
+            { input: 'a', expected: 'a', actual: null, status: null, error: null }
+          ],
+          starterCode: '# Переверните строку\ns = input()\n# Ваш код здесь'
+        },
+        {
+          id: 10,
+          title: 'Сортировка чисел',
+          description: 'Напишите программу, которая сортирует три числа по возрастанию.',
+          difficulty: 'medium',
+          completed: false,
+          tests: [
+            { input: '5 3 8', expected: '3 5 8', actual: null, status: null, error: null },
+            { input: '10 20 15', expected: '10 15 20', actual: null, status: null, error: null },
+            { input: '-5 -3 -1', expected: '-5 -3 -1', actual: null, status: null, error: null }
+          ],
+          starterCode: '# Сортировка трех чисел\nnum1, num2, num3 = map(int, input().split())\n# Ваш код здесь'
         }
       ],
       difficultyText: {
         easy: 'Легко',
         medium: 'Средне',
         hard: 'Сложно'
-      },
-      editor: null, // Для доступа, если нужно
-      editorOptions: {
-        fontSize: 14,
-        lineNumbers: 'on',
-        roundedSelection: true,
-        scrollBeyondLastLine: false,
-        cursorStyle: 'line',
-        automaticLayout: true, // Auto-resize
-        minimap: { enabled: false },
-        folding: false,
-        wordWrap: 'off',
-        suggestOnTriggerCharacters: false
       }
     }
   },
@@ -245,13 +326,15 @@ export default {
     passedTests() {
       if (!this.currentLesson.tests) return 0
       return this.currentLesson.tests.filter(test => test.status === 'passed').length
+    },
+    lineCount() {
+      return Math.max(this.userCode.split('\n').length, 1)
     }
   },
+  mounted() {
+    this.selectLesson(this.lessons[0])
+  },
   methods: {
-    onEditorMount(editor) {
-      this.editor = editor
-      editor.layout() // Force resize для фикса hidden/empty
-    },
     selectLesson(lesson) {
       if (this.currentLesson.id === lesson.id) return
       this.currentLesson = { 
@@ -261,7 +344,6 @@ export default {
       this.userCode = lesson.starterCode || ''
       this.consoleOutput = ''
       this.resetTests()
-      if (this.editor) this.editor.layout() // Resize при смене урока
     },
     resetTests() {
       if (this.currentLesson.tests) {
@@ -318,6 +400,39 @@ export default {
               factorial *= j
             }
             test.actual = factorial.toString()
+          } else if (this.currentLesson.id === 4) {
+            const n = Number(test.input)
+            test.actual = n % 2 === 0 ? 'Четное' : 'Нечетное'
+          } else if (this.currentLesson.id === 5) {
+            const [a, b, c] = test.input.split(' ').map(Number)
+            test.actual = Math.max(a, b, c).toString()
+          } else if (this.currentLesson.id === 6) {
+            const s = test.input
+            test.actual = s === s.split('').reverse().join('') ? 'Палиндром' : 'Не палиндром'
+          } else if (this.currentLesson.id === 7) {
+            const n = Number(test.input)
+            let a = 0, b = 1
+            for (let j = 2; j <= n; j++) {
+              [a, b] = [b, a + b]
+            }
+            test.actual = n === 0 ? '0' : b.toString()
+          } else if (this.currentLesson.id === 8) {
+            const n = Number(test.input)
+            let isPrime = n > 1
+            for (let j = 2; j <= Math.sqrt(n); j++) {
+              if (n % j === 0) {
+                isPrime = false
+                break
+              }
+            }
+            test.actual = isPrime ? 'Простое' : 'Составное'
+          } else if (this.currentLesson.id === 9) {
+            const s = test.input
+            test.actual = s.split('').reverse().join('')
+          } else if (this.currentLesson.id === 10) {
+            const [a, b, c] = test.input.split(' ').map(Number)
+            const sorted = [a, b, c].sort((x, y) => x - y)
+            test.actual = sorted.join(' ')
           } else {
             throw new Error('Тесты не реализованы для этого урока')
           }
@@ -357,11 +472,6 @@ export default {
     clearOutput() {
       this.consoleOutput = ''
     }
-  },
-  beforeUnmount() {
-    if (this.editor) {
-      this.editor.dispose()
-    }
   }
 }
 </script>
@@ -371,99 +481,243 @@ export default {
   min-height: 100vh;
   background-color: #0E1117;
   color: #E2E8F0;
+  padding: 20px;
 }
 
 .course-layout {
   display: grid;
-  grid-template-columns: 300px 1fr;
-  min-height: 100vh;
+  grid-template-columns: 340px 1fr;
+  min-height: calc(100vh - 40px);
+  gap: 20px;
+  align-items: start;
 }
 
-/* Сайдбар */
+/* Кастомные скроллбары */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1E1E1E;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+  border-radius: 6px;
+  border: 2px solid #1E1E1E;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #2563EB, #7C3AED);
+  transform: scale(1.05);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(135deg, #1D4ED8, #6D28D9);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3B82F6 #1E1E1E;
+}
+
+/* Сайдбар с улучшенным скроллбаром */
 .sidebar {
-  background: #1F2937;
-  border-right: 1px solid #374151;
-  overflow-y: auto;
-  max-height: 100vh;
+  background: #303030;
+  border: 1px solid #404040;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
   position: sticky;
-  top: 0;
+  top: 20px;
+  height: fit-content;
+  max-height: calc(100vh - 140px);
+  overflow: hidden;
+  margin-left: 0;
+}
+
+/* Внутренний контейнер с прокруткой */
+.sidebar-content {
+  height: 100%;
+  overflow-y: auto;
+  max-height: calc(100vh - 140px);
+  padding-right: 8px;
+  margin-right: -8px;
+}
+
+/* Кастомный скроллбар для внутреннего контейнера */
+.sidebar-content::-webkit-scrollbar {
+  width: 12px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+  background: #252525;
+  border-radius: 8px;
+  margin: 10px 0;
+  border: 1px solid #404040;
+  margin-left: 4px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+  border-radius: 8px;
+  border: 3px solid #252525;
+  min-height: 60px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #2563EB, #7C3AED);
+}
+
+.sidebar-content {
+  scrollbar-width: thin;
+  scrollbar-color: #3B82F6 #252525;
 }
 
 .sidebar-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid #374151;
+  padding: 1.25rem;
+  border-bottom: 1px solid #404040;
+  position: sticky;
+  top: 0;
+  background: #303030;
+  z-index: 10;
+  border-radius: 16px 16px 0 0;
 }
 
 .sidebar-header h2 {
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.75rem 0;
   color: #F8FAFC;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .progress-bar {
-  background: #374151;
-  border-radius: 10px;
-  height: 8px;
+  background: #404040;
+  border-radius: 8px;
+  height: 6px;
   margin-bottom: 0.5rem;
   overflow: hidden;
 }
 
 .progress-fill {
-  background: #10B981;
+  background: #3B82F6;
   height: 100%;
   transition: width 0.3s ease;
 }
 
 .progress span {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: #94A3B8;
+  font-weight: 500;
 }
 
 .lessons-list {
-  padding: 1rem 0;
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
 }
 
 .lesson-item {
+  background: rgba(14, 17, 23, 0.75);
+  border-radius: 14px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  padding: 1rem 1.5rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  border-left: 3px solid transparent;
+  gap: 0.875rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.lesson-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
 .lesson-item:hover {
-  background: #374151;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.lesson-item:hover::before {
+  transform: scaleX(1);
 }
 
 .lesson-item--active {
-  background: #374151;
-  border-left-color: #3B82F6;
+  background: rgba(14, 17, 23, 0.9);
+  border-color: #3B82F6;
+  box-shadow: 0 3px 16px rgba(59, 130, 246, 0.2);
 }
 
-.lesson-item--completed .lesson-icon {
-  background: #10B981;
+.lesson-item--active::before {
+  transform: scaleX(1);
+}
+
+.lesson-item--completed {
+  border-color: #3B82F6;
+}
+
+.lesson-item--completed::before {
+  background: linear-gradient(90deg, #3B82F6, #8B5CF6);
 }
 
 .lesson-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: #475569;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 600;
   flex-shrink: 0;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: #3B82F6;
+}
+
+.lesson-item:hover .lesson-icon {
+  background: rgba(59, 130, 246, 0.2);
+  transform: scale(1.03);
+}
+
+.lesson-item--active .lesson-icon {
+  background: #3B82F6;
+  color: white;
+  border-color: #3B82F6;
+}
+
+.lesson-item--completed .lesson-icon {
+  background: #3B82F6;
+  color: white;
+  border-color: #3B82F6;
+}
+
+.lesson-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .lesson-info h3 {
-  margin: 0 0 0.25rem 0;
-  font-size: 0.95rem;
+  margin: 0 0 0.375rem 0;
+  font-size: 0.9rem;
   color: #F8FAFC;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
 .lesson-info p {
@@ -471,21 +725,50 @@ export default {
   font-size: 0.8rem;
   color: #94A3B8;
   line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-clamp: 2;
 }
 
 /* Основной контент */
 .main-content {
-  padding: 2rem;
+  padding: 0;
   overflow-y: auto;
-  max-height: 100vh;
+  max-height: calc(100vh - 40px);
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.problem-section {
-  background: #1F2937;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #374151;
+.main-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #0E1117;
+  border-radius: 6px;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+  border-radius: 6px;
+  border: 2px solid #0E1117;
+}
+
+.problem-section,
+.code-section,
+.control-panel,
+.output-section,
+.tests-section {
+  background: #303030;
+  border-radius: 16px;
+  padding: 1.25rem;
+  border: 1px solid #404040;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  margin: 0;
 }
 
 .problem-header {
@@ -498,23 +781,24 @@ export default {
 .problem-header h1 {
   margin: 0;
   color: #F8FAFC;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
 }
 
 .difficulty {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
+  padding: 0.35rem 0.875rem;
+  border-radius: 16px;
   font-size: 0.75rem;
   font-weight: 600;
 }
 
 .difficulty--easy {
-  background: #10B981;
+  background: #3B82F6;
   color: white;
 }
 
 .difficulty--medium {
-  background: #F59E0B;
+  background: #8B5CF6;
   color: white;
 }
 
@@ -526,15 +810,7 @@ export default {
 .problem-description {
   line-height: 1.6;
   color: #E2E8F0;
-}
-
-/* Редактор кода */
-.code-section {
-  background: #1F2937;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #374151;
+  font-size: 0.95rem;
 }
 
 .code-header {
@@ -547,6 +823,8 @@ export default {
 .code-header h3 {
   margin: 0;
   color: #F8FAFC;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .code-actions {
@@ -554,26 +832,88 @@ export default {
   gap: 0.5rem;
 }
 
+/* Исправленный редактор кода */
 .code-editor-container {
+  position: relative;
   background: #1E1E1E;
-  border-radius: 8px;
-  border: 1px solid #374151;
-  overflow: hidden;
-  height: 400px;
-}
-
-.code-editor {
-  height: 100%;
-  width: 100%;
-}
-
-/* Панель управления */
-.control-panel {
-  background: #1F2937;
   border-radius: 12px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #374151;
+  border: 1px solid #404040;
+  height: 400px;
+  font-family: 'Monaco', 'Consolas', monospace;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-editor-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+}
+
+.simple-editor {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #E2E8F0;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  tab-size: 2;
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  box-sizing: border-box;
+  padding-left: 3rem;
+}
+
+.simple-editor::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.simple-editor::-webkit-scrollbar-track {
+  background: #1E1E1E;
+  border-radius: 4px;
+}
+
+.simple-editor::-webkit-scrollbar-thumb {
+  background: #3B82F6;
+  border-radius: 4px;
+}
+
+.line-numbers {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3rem;
+  background: #252526;
+  border-right: 1px solid #404040;
+  padding: 0.5rem 0;
+  font-size: 12px;
+  color: #858585;
+  text-align: right;
+  line-height: 1.5;
+  user-select: none;
+  font-family: 'Monaco', 'Consolas', monospace;
+  z-index: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.line-numbers span {
+  padding-right: 0.5rem;
+  width: 100%;
 }
 
 .control-buttons {
@@ -586,11 +926,11 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
+  padding: 0.7rem 1.1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -598,6 +938,7 @@ export default {
 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 .btn--primary {
@@ -607,7 +948,8 @@ export default {
 
 .btn--primary:hover:not(:disabled) {
   background: #2563EB;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .btn--secondary {
@@ -617,49 +959,45 @@ export default {
 
 .btn--secondary:hover:not(:disabled) {
   background: #7C3AED;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
 }
 
 .btn--success {
-  background: #10B981;
+  background: #3B82F6;
   color: white;
 }
 
 .btn--success:hover:not(:disabled) {
-  background: #059669;
-  transform: translateY(-1px);
+  background: #2563EB;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .btn--outline {
   background: transparent;
   color: #94A3B8;
-  border: 1px solid #475569;
+  border: 1px solid #505050;
 }
 
 .btn--outline:hover:not(:disabled) {
-  background: #374151;
+  background: #404040;
   color: #E2E8F0;
+  transform: translateY(-2px);
 }
 
 .btn--small {
-  padding: 0.5rem 1rem;
-  font-size: 0.75rem;
-}
-
-/* Секции вывода */
-.output-section,
-.tests-section {
-  background: #1F2937;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #374151;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.7rem;
+  border-radius: 8px;
 }
 
 .output-section h3,
 .tests-section h3 {
   margin: 0 0 1rem 0;
   color: #F8FAFC;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .output-header,
@@ -671,9 +1009,9 @@ export default {
 }
 
 .console-output {
-  background: #0F172A;
-  border: 1px solid #374151;
-  border-radius: 8px;
+  background: #1E1E1E;
+  border: 1px solid #404040;
+  border-radius: 12px;
   padding: 1rem;
   color: #E2E8F0;
   font-family: 'Monaco', 'Consolas', monospace;
@@ -683,20 +1021,33 @@ export default {
   overflow-y: auto;
 }
 
+.console-output::-webkit-scrollbar {
+  width: 8px;
+}
+
+.console-output::-webkit-scrollbar-track {
+  background: #1E1E1E;
+  border-radius: 4px;
+}
+
+.console-output::-webkit-scrollbar-thumb {
+  background: #3B82F6;
+  border-radius: 4px;
+}
+
 .console-output pre {
   margin: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
 }
 
-/* Тесты */
 .tests-summary {
   color: #94A3B8;
   font-size: 0.875rem;
 }
 
 .tests-passed {
-  color: #10B981;
+  color: #3B82F6;
   font-weight: 600;
 }
 
@@ -704,6 +1055,22 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.tests-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tests-list::-webkit-scrollbar-track {
+  background: #303030;
+  border-radius: 3px;
+}
+
+.tests-list::-webkit-scrollbar-thumb {
+  background: #3B82F6;
+  border-radius: 3px;
 }
 
 .test-item {
@@ -711,15 +1078,20 @@ export default {
   align-items: flex-start;
   gap: 0.75rem;
   padding: 1rem;
-  background: #0F172A;
-  border-radius: 8px;
-  border: 1px solid #374151;
+  background: #1E1E1E;
+  border-radius: 12px;
+  border: 1px solid #404040;
   transition: all 0.2s ease;
 }
 
+.test-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 .test-item--passed {
-  border-color: #10B981;
-  background: rgba(16, 185, 129, 0.05);
+  border-color: #3B82F6;
+  background: rgba(59, 130, 246, 0.05);
 }
 
 .test-item--failed {
@@ -745,7 +1117,7 @@ export default {
 }
 
 .test-item--passed .test-icon {
-  background: #10B981;
+  background: #3B82F6;
   color: white;
 }
 
@@ -779,14 +1151,13 @@ export default {
 }
 
 .test-actual {
-  color: #10B981;
+  color: #3B82F6;
 }
 
 .test-error {
   color: #EF4444;
 }
 
-/* Адаптивность */
 @media (max-width: 1024px) {
   .course-layout {
     grid-template-columns: 1fr;
@@ -795,11 +1166,20 @@ export default {
   .sidebar {
     display: none;
   }
+  
+  .main-content {
+    margin-top: 0;
+    padding: 0;
+  }
 }
 
 @media (max-width: 768px) {
+  .course-page {
+    padding: 10px;
+  }
+  
   .main-content {
-    padding: 1rem;
+    padding: 0;
   }
   
   .control-buttons {
@@ -812,6 +1192,14 @@ export default {
   
   .code-editor-container {
     height: 300px;
+  }
+  
+  .problem-section,
+  .code-section,
+  .control-panel,
+  .output-section,
+  .tests-section {
+    border-radius: 16px;
   }
 }
 </style>
