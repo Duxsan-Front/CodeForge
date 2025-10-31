@@ -13,6 +13,9 @@
   },
   "dependencies": {
     "monaco-editor": "^0.53.0",
+    "monaco-editor-vue3": "^1.0.4",
+    "monaco-editor-webpack-plugin": "^7.1.1",
+    "pyodide": "^0.29.0",
     "router": "^2.2.0",
     "vue": "^3.5.22",
     "vue-router": "^4.6.3"
@@ -23,6 +26,7 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.16",
     "vite": "^7.1.11",
+    "vite-plugin-monaco-editor-esm": "^2.0.2",
     "vite-plugin-vue-devtools": "^8.0.3"
   }
 }

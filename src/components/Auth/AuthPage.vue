@@ -3,52 +3,162 @@
     <main class="main">
       <div class="container">
         <div class="auth-container">
-          <div class="auth-card">
-            <h1 class="auth-title">CodeForge</h1>
-            
-            <div class="auth-tabs">
-              <button class="auth-tab auth-tab--active">Вход</button>
-              <button class="auth-tab">Регистрация</button>
+          <transition name="card-scale" mode="out-in">
+            <div :key="activeTab" class="auth-card">
+              <h1 class="auth-title">CodeForge</h1>
+              
+              <div class="auth-tabs">
+                <button 
+                  class="auth-tab" 
+                  :class="{ 'auth-tab--active': activeTab === 'login' }"
+                  @click="switchTab('login')"
+                >
+                  Вход
+                </button>
+                <button 
+                  class="auth-tab" 
+                  :class="{ 'auth-tab--active': activeTab === 'register' }"
+                  @click="switchTab('register')"
+                >
+                  Регистрация
+                </button>
+              </div>
+              
+              <div class="forms-wrapper">
+                <!-- Форма входа -->
+                <transition name="scale-fade" mode="out-in">
+                  <form 
+                    v-if="activeTab === 'login'" 
+                    key="login"
+                    class="auth-form" 
+                    @submit.prevent="handleLogin"
+                  >
+                    <div class="form-group">
+                      <label for="login-email" class="form-label">Email:</label>
+                      <input 
+                        type="email" 
+                        id="login-email" 
+                        class="form-input" 
+                        placeholder="Введите почту"
+                        v-model="loginData.email"
+                        required
+                      >
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="login-password" class="form-label">Пароль:</label>
+                      <input 
+                        type="password" 
+                        id="login-password" 
+                        class="form-input" 
+                        placeholder="Введите пароль"
+                        v-model="loginData.password"
+                        required
+                      >
+                    </div>
+                    
+                    <div class="form-options">
+                      <a href="#" class="forgot-password">Забыли пароль?</a>
+                    </div>
+                    
+                    <button class="auth-submit-btn" type="submit" :disabled="isLoading">
+                      {{ isLoading ? 'Вход...' : 'Вход' }}
+                    </button>
+                  </form>
+                  
+                  <!-- Форма регистрации -->
+                  <form 
+                    v-else 
+                    key="register"
+                    class="auth-form" 
+                    @submit.prevent="handleRegister"
+                  >
+                    <div class="form-group">
+                      <label for="register-username" class="form-label">Имя пользователя:</label>
+                      <input 
+                        type="text" 
+                        id="register-username" 
+                        class="form-input" 
+                        placeholder="Ваше имя"
+                        v-model="registerData.username"
+                        required
+                      >
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="register-email" class="form-label">Email:</label>
+                      <input 
+                        type="email" 
+                        id="register-email" 
+                        class="form-input" 
+                        placeholder="Введите почту"
+                        v-model="registerData.email"
+                        required
+                      >
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="register-password" class="form-label">Пароль:</label>
+                      <input 
+                        type="password" 
+                        id="register-password" 
+                        class="form-input" 
+                        placeholder="Придумайте пароль"
+                        v-model="registerData.password"
+                        required
+                      >
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="register-confirm-password" class="form-label">Подтвердите пароль:</label>
+                      <input 
+                        type="password" 
+                        id="register-confirm-password" 
+                        class="form-input" 
+                        placeholder="Повторите пароль"
+                        v-model="registerData.confirmPassword"
+                        required
+                      >
+                    </div>
+                    
+                    <div class="form-agreement">
+                      <label class="checkbox-label">
+                        <input 
+                          type="checkbox" 
+                          v-model="registerData.agreeToTerms"
+                        >
+                        <span class="checkmark"></span>
+                        Я согласен с <a href="#" class="terms-link">условиями использования</a>
+                      </label>
+                    </div>
+                    
+                    <button class="auth-submit-btn" type="submit" :disabled="isLoading">
+                      {{ isLoading ? 'Регистрация...' : 'Зарегистрироваться' }}
+                    </button>
+                  </form>
+                </transition>
+              </div>
             </div>
-            
-            <form class="auth-form" @submit.prevent="handleLogin">
-              <div class="form-group">
-                <label for="email" class="form-label">Email:</label>
-                <input 
-                  type="email" 
-                  id="email" 
-                  class="form-input" 
-                  placeholder="pochta@"
-                  v-model="email"
-                  required
-                  ref="emailInput"
-                >
-              </div>
-              
-              <div class="form-group">
-                <label for="password" class="form-label">Пароль:</label>
-                <input 
-                  type="password" 
-                  id="password" 
-                  class="form-input" 
-                  placeholder="Введите пароль"
-                  v-model="password"
-                  required
-                >
-              </div>
-              
-              <div class="form-options">
-                <a href="#" class="forgot-password">Забыли пароль?</a>
-              </div>
-              
-              <button class="auth-submit-btn" type="submit">
-                Вход
-              </button>
-            </form>
-          </div>
+          </transition>
         </div>
       </div>
     </main>
+
+    <!-- Toast уведомления -->
+    <transition name="toast-slide">
+      <div v-if="toast.show" :class="['toast', `toast--${toast.type}`]" @click="hideToast">
+        <div class="toast-icon">
+          <span v-if="toast.type === 'error'">⚠️</span>
+          <span v-else-if="toast.type === 'success'">✅</span>
+          <span v-else>ℹ️</span>
+        </div>
+        <div class="toast-content">
+          <div class="toast-title">{{ toast.title }}</div>
+          <div class="toast-message">{{ toast.message }}</div>
+        </div>
+        <button class="toast-close" @click.stop="hideToast">×</button>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -57,40 +167,184 @@ export default {
   name: 'AuthPage',
   data() {
     return {
-      email: '',
-      password: ''
+      activeTab: 'login',
+      isLoading: false,
+      loginData: {
+        email: '',
+        password: ''
+      },
+      registerData: {
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        agreeToTerms: false
+      },
+      toast: {
+        show: false,
+        type: 'error',
+        title: '',
+        message: '',
+        timeout: null
+      }
     }
   },
   methods: {
-    handleLogin() {
-      // Простая имитация входа
-      const userData = {
-        isLoggedIn: true,
-        username: this.email.split('@')[0] || 'User',
-        userAvatar: (this.email.split('@')[0] || 'U').charAt(0).toUpperCase()
+    showToast(type, title, message, duration = 4000) {
+      console.log('Showing toast:', type, title, message) // Для отладки
+      
+      // Очищаем предыдущий таймер
+      if (this.toast.timeout) {
+        clearTimeout(this.toast.timeout)
       }
       
-      // Сохраняем в глобальный store
-      this.$store.setUser(userData)
+      this.toast.show = false // Сначала скрываем, чтобы анимация работала
       
-      // Сохраняем в localStorage
-      localStorage.setItem('user', JSON.stringify(userData))
+      this.$nextTick(() => {
+        this.toast = {
+          show: true,
+          type,
+          title,
+          message,
+          timeout: setTimeout(() => {
+            this.hideToast()
+          }, duration)
+        }
+      })
+    },
+    
+    hideToast() {
+      console.log('Hiding toast') // Для отладки
+      if (this.toast.timeout) {
+        clearTimeout(this.toast.timeout)
+        this.toast.timeout = null
+      }
+      this.toast.show = false
+    },
+    
+    switchTab(tab) {
+      if (this.activeTab === tab) return
+      this.activeTab = tab
+      this.resetForms()
+      this.hideToast()
+    },
+    
+    async handleLogin() {
+      if (this.isLoading) return
       
-      // Переходим на главную страницу
-      this.$router.push('/')
+      this.isLoading = true
+      
+      try {
+        // Простая валидация
+        if (!this.loginData.email || !this.loginData.password) {
+          this.showToast('error', 'Ошибка', 'Заполните все поля')
+          this.isLoading = false
+          return
+        }
+        
+        const userData = {
+          isLoggedIn: true,
+          username: this.loginData.email.split('@')[0] || 'User',
+          userAvatar: (this.loginData.email.split('@')[0] || 'U').charAt(0).toUpperCase()
+        }
+        
+        localStorage.setItem('user', JSON.stringify(userData))
+        
+        this.showToast('success', 'Успешный вход!', 'Добро пожаловать в CodeForge!', 2000)
+        
+        setTimeout(() => {
+          this.$router.push('/')
+        }, 1500)
+        
+      } catch (error) {
+        console.error('Ошибка входа:', error)
+        this.showToast('error', 'Ошибка входа', 'Проверьте правильность данных')
+      } finally {
+        this.isLoading = false
+      }
+    },
+    
+    async handleRegister() {
+      if (this.isLoading) return
+      
+      // Валидация
+      if (!this.registerData.username || !this.registerData.email || !this.registerData.password) {
+        this.showToast('error', 'Ошибка', 'Заполните все обязательные поля')
+        return
+      }
+      
+      if (this.registerData.password !== this.registerData.confirmPassword) {
+        this.showToast('error', 'Ошибка', 'Пароли не совпадают')
+        return
+      }
+      
+      if (this.registerData.password.length < 6) {
+        this.showToast('error', 'Ошибка', 'Пароль должен содержать минимум 6 символов')
+        return
+      }
+      
+      if (!this.registerData.agreeToTerms) {
+        this.showToast('error', 'Внимание', 'Необходимо согласиться с условиями использования')
+        return
+      }
+      
+      this.isLoading = true
+      
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        const userData = {
+          isLoggedIn: true,
+          username: this.registerData.username,
+          userAvatar: this.registerData.username.charAt(0).toUpperCase()
+        }
+        
+        localStorage.setItem('user', JSON.stringify(userData))
+        
+        this.showToast('success', 'Регистрация успешна!', 'Добро пожаловать в CodeForge!', 2000)
+        
+        setTimeout(() => {
+          this.$router.push('/')
+        }, 1500)
+        
+      } catch (error) {
+        console.error('Ошибка регистрации:', error)
+        this.showToast('error', 'Ошибка регистрации', 'Попробуйте еще раз')
+      } finally {
+        this.isLoading = false
+      }
+    },
+    
+    resetForms() {
+      this.loginData = {
+        email: '',
+        password: ''
+      }
+      this.registerData = {
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        agreeToTerms: false
+      }
     }
   },
   
   mounted() {
-    // Фокусируемся на поле ввода при загрузке
-    this.$nextTick(() => {
-      this.$refs.emailInput?.focus()
-    })
+    this.resetForms()
+  },
+  
+  beforeUnmount() {
+    if (this.toast.timeout) {
+      clearTimeout(this.toast.timeout)
+    }
   }
 }
 </script>
 
 <style scoped>
+/* Все предыдущие стили остаются без изменений */
+
 .auth-page {
   min-height: 100vh;
   background-color: #0E1117;
@@ -126,7 +380,8 @@ export default {
   padding: 3rem;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transform-origin: center center;
 }
 
 .auth-title {
@@ -155,13 +410,13 @@ export default {
   border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   font-size: 16px;
 }
 
 .auth-tab:hover {
   color: #E5E7EB;
-  background: #4B5563;
+  background: rgba(75, 85, 99, 0.5);
 }
 
 .auth-tab--active {
@@ -173,10 +428,21 @@ export default {
   transform: scale(0.98);
 }
 
+.forms-wrapper {
+  position: relative;
+  min-height: 320px;
+  overflow: hidden;
+}
+
+.form-container {
+  width: 100%;
+}
+
 .auth-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  width: 100%;
 }
 
 .form-group {
@@ -198,13 +464,15 @@ export default {
   padding: 12px 16px;
   color: #E5E7EB;
   font-size: 16px;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
 }
 
 .form-input:focus {
   outline: none;
   border-color: #3B82F6;
   background: #4B5563;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 }
 
 .form-input::placeholder {
@@ -220,12 +488,70 @@ export default {
   color: #3B82F6;
   text-decoration: none;
   font-size: 14px;
-  transition: color 0.2s;
+  transition: all 0.3s ease;
 }
 
 .forgot-password:hover {
   color: #60A5FA;
   text-decoration: underline;
+}
+
+.form-agreement {
+  margin: 1rem 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #9CA3AF;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.checkbox-label:hover {
+  color: #E5E7EB;
+}
+
+.checkbox-label input[type="checkbox"] {
+  display: none;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #4B5563;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark {
+  background: #3B82F6;
+  border-color: #3B82F6;
+  transform: scale(1.05);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+  content: '✓';
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.terms-link {
+  color: #3B82F6;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.terms-link:hover {
+  text-decoration: underline;
+  color: #60A5FA;
 }
 
 .auth-submit-btn {
@@ -237,61 +563,236 @@ export default {
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   margin-top: 1rem;
 }
 
-.auth-submit-btn:hover {
+.auth-submit-btn:hover:not(:disabled) {
   background: #2563EB;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
 }
 
-.auth-submit-btn:active {
-  transform: scale(0.98);
-  background: #1D4ED8;
+.auth-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
-/* Мобильная адаптация */
+.auth-submit-btn:disabled {
+  background: #6B7280;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Анимация увеличения карточки */
+.card-scale-enter-active {
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card-scale-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+.card-scale-enter-from {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.card-scale-leave-to {
+  opacity: 0;
+  transform: scale(1.1);
+}
+
+.card-scale-enter-to,
+.card-scale-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Анимация увеличения блока форм */
+.scale-fade-enter-active {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.scale-fade-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+.scale-fade-enter-from {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.scale-fade-leave-to {
+  opacity: 0;
+  transform: scale(1.05);
+}
+
+.scale-fade-enter-to,
+.scale-fade-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Последовательная анимация элементов внутри */
+.fade-stagger-enter-active {
+  transition: all 0.5s ease;
+  transition-delay: calc(0.1s * var(--stagger-index));
+}
+
+.fade-stagger-leave-active {
+  transition: all 0.3s ease;
+}
+
+.fade-stagger-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-stagger-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.fade-stagger-enter-to,
+.fade-stagger-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-stagger-move {
+  transition: transform 0.4s ease;
+}
+
+/* Стили для Toast уведомлений */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #1F2937;
+  border: 1px solid #374151;
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 300px;
+  max-width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  z-index: 10000;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toast:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.toast--error {
+  border-left: 4px solid #EF4444;
+}
+
+.toast--success {
+  border-left: 4px solid #10B981;
+}
+
+.toast--info {
+  border-left: 4px solid #3B82F6;
+}
+
+.toast-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  color: #E5E7EB;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.toast-message {
+  color: #9CA3AF;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: #9CA3AF;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.toast-close:hover {
+  background: #374151;
+  color: #E5E7EB;
+}
+
+/* Упрощенная анимация Toast */
+.toast-slide-enter-active {
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toast-slide-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.toast-slide-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.toast-slide-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.toast-slide-enter-to {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Убираем сложные stagger анимации */
+.fade-stagger-enter-active,
+.fade-stagger-leave-active,
+.fade-stagger-move {
+  transition: none;
+}
+
+/* Мобильная адаптация для Toast */
 @media (max-width: 768px) {
-  .auth-page {
-    padding-top: 1rem;
-  }
-  
-  .main {
-    padding: 1rem 0;
-    min-height: calc(100vh - 1rem);
-  }
-  
-  .auth-card {
-    padding: 2rem;
-    margin: 0 1rem;
-  }
-  
-  .auth-title {
-    font-size: 1.75rem;
+  .toast {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+    max-width: none;
   }
 }
 
 @media (max-width: 480px) {
-  .auth-card {
-    padding: 1.5rem;
-  }
-  
-  .auth-title {
-    font-size: 1.5rem;
-  }
-  
-  .auth-tab {
-    padding: 10px 12px;
-    font-size: 14px;
-  }
-  
-  .form-input {
-    padding: 10px 14px;
-  }
-  
-  .auth-submit-btn {
-    padding: 12px 16px;
+  .toast {
+    padding: 12px;
   }
 }
 </style>

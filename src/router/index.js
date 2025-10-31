@@ -7,6 +7,11 @@ const routes = [
     component: () => import('@/components/Main/Main.vue')
   },
   {
+    path: '/courses/python',
+    name: 'python',
+    component: () => import('@/components/Courses/Python.vue')
+  },
+  {
     path: '/auth',
     name: 'auth',
     component: () => import('@/components/Auth/AuthPage.vue')
