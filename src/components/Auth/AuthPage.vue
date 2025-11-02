@@ -343,26 +343,37 @@ export default {
 </script>
 
 <style scoped>
-/* Все предыдущие стили остаются без изменений */
-
+/* Основные стили для полного экрана */
 .auth-page {
-  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
   background-color: #0E1117;
-  padding-top: 2rem;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.main {
-  padding: 2rem 0;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 2rem);
+}
+
+.main {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .auth-container {
@@ -370,18 +381,32 @@ export default {
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 2rem 0;
+  height: 100%;
+  padding: 0;
 }
 
 .auth-card {
   background: #1F2937;
   border: 1px solid #374151;
   border-radius: 12px;
-  padding: 3rem;
-  width: 100%;
+  padding: 2.5rem;
+  width: 90%;
   max-width: 400px;
+  max-height: 90vh;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   transform-origin: center center;
+  overflow-y: auto;
+}
+
+/* Скрываем скроллбар для auth-card */
+.auth-card::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+
+.auth-card {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .auth-title {
@@ -430,7 +455,7 @@ export default {
 
 .forms-wrapper {
   position: relative;
-  min-height: 320px;
+  min-height: 300px;
   overflow: hidden;
 }
 
@@ -441,7 +466,7 @@ export default {
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
   width: 100%;
 }
 
@@ -634,36 +659,6 @@ export default {
   transform: scale(1);
 }
 
-/* Последовательная анимация элементов внутри */
-.fade-stagger-enter-active {
-  transition: all 0.5s ease;
-  transition-delay: calc(0.1s * var(--stagger-index));
-}
-
-.fade-stagger-leave-active {
-  transition: all 0.3s ease;
-}
-
-.fade-stagger-enter-from {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.fade-stagger-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.fade-stagger-enter-to,
-.fade-stagger-leave-from {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.fade-stagger-move {
-  transition: transform 0.4s ease;
-}
-
 /* Стили для Toast уведомлений */
 .toast {
   position: fixed;
@@ -748,7 +743,7 @@ export default {
   color: #E5E7EB;
 }
 
-/* Упрощенная анимация Toast */
+/* Анимация Toast */
 .toast-slide-enter-active {
   transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -772,15 +767,19 @@ export default {
   transform: translateX(0);
 }
 
-/* Убираем сложные stagger анимации */
-.fade-stagger-enter-active,
-.fade-stagger-leave-active,
-.fade-stagger-move {
-  transition: none;
-}
-
-/* Мобильная адаптация для Toast */
-@media (max-width: 768px) {
+/* Адаптация для мобильных устройств */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 2rem 1.5rem;
+    width: 95%;
+    max-height: 95vh;
+  }
+  
+  .auth-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+  
   .toast {
     top: 10px;
     right: 10px;
@@ -790,9 +789,10 @@ export default {
   }
 }
 
-@media (max-width: 480px) {
-  .toast {
-    padding: 12px;
+/* Предотвращаем масштабирование на мобильных устройствах при фокусе на инпуты */
+@media (max-width: 768px) {
+  .form-input {
+    font-size: 16px; /* Предотвращает зум на iOS */
   }
 }
 </style>

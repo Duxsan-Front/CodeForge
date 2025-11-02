@@ -55,13 +55,15 @@
 
     <!-- Мобильный сайдбар -->
     <MobileSidebar
-      v-if="isMobile && showSidebar"
-      :lessons="lessons"
-      :current-lesson="currentLesson"
-      :title="courseTitle"
-      @select-lesson="selectLessonMobile"
-      @close="showSidebar = false"
-    />
+        v-if="isMobile && showSidebar"
+        :lessons="lessons"
+        :current-lesson="currentLesson"
+        :title="courseTitle"
+        :is-mobile="isMobile"
+        :show-sidebar="showSidebar"
+        @select-lesson="selectLessonMobile"
+        @close="showSidebar = false"
+        />
   </div>
 </template>
 
