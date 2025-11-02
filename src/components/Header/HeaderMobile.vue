@@ -187,7 +187,7 @@ export default {
   padding: 12px;
   flex-direction: column;
   gap: 4px;
-  z-index: 1000;
+  z-index: 1001;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 

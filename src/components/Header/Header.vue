@@ -136,8 +136,12 @@ export default {
   display: flex;
   align-items: center;
   border-bottom: 1px solid #374151;
-  position: relative;
+  position: fixed; /* Добавлено */
+  top: 0; /* Добавлено */
+  left: 0; /* Добавлено */
+  right: 0; /* Добавлено */
   background: #0E1117;
+  z-index: 1000; /* Добавлено для обеспечения поверх другого контента */
 }
 
 @media (max-width: 1023px) {

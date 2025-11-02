@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <Header v-if="showHeader" />
-    <router-view />
+    <main class="main-content">
+      <router-view />
+    </main>
   </div>
 </template>
 
@@ -31,5 +33,28 @@ export default {
 body {
   background-color: #0E1117;
   font-family: Arial, sans-serif;
+}
+
+/* Добавьте эти стили */
+.main-content {
+  margin-top: 96px; /* Высота header для десктопа */
+}
+
+@media (max-width: 1023px) {
+  .main-content {
+    margin-top: 80px; /* Высота header для планшетов */
+  }
+}
+
+@media (max-width: 767px) {
+  .main-content {
+    margin-top: 70px; /* Высота header для мобильных */
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    margin-top: 60px; /* Высота header для маленьких мобильных */
+  }
 }
 </style>
